@@ -16,5 +16,6 @@ compilation:
 
 to compile locally just run `make`
 
-to compile and install set export `BINDIR` to the location set to
-`/usr/local/bin` by default. And then run `sudo make install`
+to compile and install set export `BINDIR` to the install location
+(set to `/usr/local/bin` by default). And then run `sudo make
+install`
