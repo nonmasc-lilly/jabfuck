@@ -3,16 +3,22 @@
 #include <stdlib.h>
 
 #define MAJOR 1
-#define MINOR 0
-#define PATCH 1
+#define MINOR 1
+#define PATCH 0
 
-char *compile(const char *src);
+#define FALSE 0
+#define TRUE 1
+
+typedef int BOOL;
+
+char *compile(const char *src, BOOL fexplicit_comments);
 
 int main(int argc, char **argv) {
     FILE *fp;
     char *content, *output;
     const char *ifile, *ofile;
     int i, fsz;
+    BOOL fexplicit_comments;
     ofile = "bf.asm";
 
     if(argc < 2) {
@@ -35,7 +41,12 @@ int main(int argc, char **argv) {
                                 "\t-v: shows version menu and "
                                 "exits\n"
                                 "\t-o <filename>: output file "
-                                "name\n",
+                                "name\n"
+                                "\t--fexplicit_comments:\nany "
+                                "character that is not a valid"
+                                "brainfuck instruction will "
+                                "raise an error, unless the line"
+                                "is commented with '#'\n",
                                 MAJOR, MINOR, PATCH, argv[0]);
                 exit(0);
             case 'v':
@@ -55,6 +66,9 @@ int main(int argc, char **argv) {
                 }
                 ofile = argv[++i];
                 break;
+            case '-':
+                if(!strcmp(argv[i], "--fexplicit_comments"))
+                    fexplicit_comments = TRUE;
             }
         }
     }
@@ -69,7 +83,7 @@ int main(int argc, char **argv) {
     fread(content, 1, fsz, fp);
     fclose(fp);
 
-    output = compile(content);
+    output = compile(content, fexplicit_comments);
 
     fp = fopen(ofile, "w");
     fwrite(output, 1, strlen(output), fp);
@@ -81,7 +95,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-char *compile(const char *src) {
+char *compile(const char *src, BOOL fexplicit_comments) {
     char *ret, *tmp;
     const char *si, *template, *boilerplate;
     int counter, counter2, lcount, loop_num;
@@ -243,6 +257,21 @@ char *compile(const char *src) {
             strcat(ret, tmp);
             free(tmp);
             break;
+        case '#':
+            if(!fexplicit_comments) break;
+            while(*(++si) != '\n');
+            break;
+        case '\n':
+        case '\r':
+        case '\t':
+        case ' ':
+            break;
+        default:
+            if(!fexplicit_comments) break;
+            fprintf(stderr, "expected non bf characters to be"
+                            " commented at character %d\n",
+                            (int)(si-src));
+            exit(1);
         }
     }
     tmp = malloc(strlen(boilerplate)+strlen(ret)+1);

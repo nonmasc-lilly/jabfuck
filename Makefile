@@ -6,3 +6,11 @@ all: comp.c
 
 install: all
 	cp -r jabf /usr/local/bin
+
+test: all
+	./jabf cat.bf -o cat.asm
+	nasm cat.asm -o cat.o -felf64
+	ld cat.o -o cat
+
+clean:
+	rm -rf *.o *.asm

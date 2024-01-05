@@ -1,3 +1,3 @@
 
-cat program in brainfuck in order to test
+# cat program in brainfuck in order to test
 +[<.,>]
