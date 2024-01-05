@@ -4,7 +4,7 @@
 
 #define MAJOR 1
 #define MINOR 0
-#define PATCH 0
+#define PATCH 1
 
 char *compile(const char *src);
 
@@ -24,18 +24,29 @@ int main(int argc, char **argv) {
     
     ifile = argv[1];
 
-    for(i=2; i<argc; i++) {
+    for(i=0; i<argc; i++) {
         if(argv[i][0] == '-') {
             switch(argv[i][1]) {
             case 'h':
+                fprintf(stdout, "jabfuck v%d.%d.%d\nusage: "
+                                "%s <input file>? [options]"
+                                " options:\n"
+                                "\t-h: shows this menu and exits\n"
+                                "\t-v: shows version menu and "
+                                "exits\n"
+                                "\t-o <filename>: output file "
+                                "name\n",
+                                MAJOR, MINOR, PATCH, argv[0]);
+                exit(0);
             case 'v':
                 fprintf(stdout, "jabfuck v%d.%d.%d\n\twritten by"
-                                " nonmasc-lilly Jan 2024,"
-                                " implementing the brainfuck"
+                                " nonmasc-lilly Jan 2024\n\t"
+                                "implementing the brainfuck"
                                 " programming language, see:\n\t"
                                 "https://esolangs.org/wiki/"
                                 "Brainfuck\n",
                                 MAJOR, MINOR, PATCH);
+                exit(0);
             case 'o':
                 if(strcmp(ofile, "bf.asm")) {
                     fprintf(stderr, "cannot have more than one"
